@@ -1,0 +1,26 @@
+{
+    "id": "CCE3D5E0",
+    "path": "~/projects/AngieShinyApp/run_app.sh",
+    "project_path": "run_app.sh",
+    "type": "sh",
+    "hash": "4129027154",
+    "contents": "",
+    "dirty": false,
+    "created": 1754777034080.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "9,36",
+        "scrollLine": "8"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1754777248,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1754777248,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,90 @@
+MSI walkthrough write up
+
+ssh ricon001@login.msi.umn.edu
+--> then ssh mesabi (or whatever cluster you want)
+
+Umask 077 <- group read, write (or used shared folder)
+Goes offline the first wednesday of every month for maintenance
+wget works best with the login node
+public folder means any MSI user can look in there
+datarelease (UMGC) will put their data there
+
+MASABI (bigest newest)
+-820 Compute Cores
+-
+
+ITASCA (2nd oldest)
+-500 cores
+
+MONGI (SPELLING?)
+-next system coming out in October
+
+LAB (interactive machine)
+-1.5 hours of computation you burn one service unit (we currently have 70k service units)
+-lab does not use service units; great place to start
+
+$212 per year if want more than 20 TB of home (tier 1)
+
+2nd Tier Storage (not actively working with this data; just holding area)
+
+Archive (or "cold" storage)
+-$456.12 for five years
+
+
+	-"snapshot" is (offsite) backup
+		cd .snapshot from original login
+		
+Transfer to Second tier storage 
+-each ind. (per group) gets 120 TB of this type of storage
+-can set up ways to set permissions to allow the group people to access ind. stored data
+
+Globus
+-split plane and go to home
+-drag and drop? 
+	-if don't have globus (other place) can set up ackles (?) to make anything a link
+	-then use wgit to pull it up
+	
+
+
+WEB BROWSER
+-software specific options: on the umn help page
+-click on software and will show you all versions
+
+interactive jobs:
+qsub a job with -X walltime, #node
+
+if need to do longer things can then submit a batch job
+www.msi.umn.edu/queues will show what different queues through each cluster can handle
+
+www.msi.umn.edu/software gets software request
+-if 3 or more groups want new software installed will likely pay for it
+-if just a python package will probably have us install it
+
+Through Shane can get support if can't get Tensorflow (or whatever) set up and running
+
+
+Ben Lynch David ? are Tensorflow people to contact!
+
+"Containers"; tutorial can register for msi.umn.edu/tutorials
+
+NICE (interactive session/portal?)
+-nice.msi.umn.edu
+-login then choose cores and G
+-will open in new window (and GUI?)
+
+NX (interactive linux environment)
+-no time limits!
+
+PBS
+-m abe : send me a message when a job aborts begins and ends
+-can also include output path in here
+
+	msi.umn.edu/(something about submitting jobs)....looks like really useful info 
+	checkjob -v "jobnumber"
+	showstart "jobnumber"
+	
+
+
+MSI LUNCH AND LEARN
+	
+

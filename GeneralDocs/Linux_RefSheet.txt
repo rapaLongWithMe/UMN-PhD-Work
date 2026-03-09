@@ -1,0 +1,16 @@
+
+## Change part of a file name for all files ending with a shared (in this case) file extension
+for file in *.csv ; do mv $file ${file//Control/Cold} ; done
+
+## print the number of files in a directory
+ls | wc -l
+
+## Print the number of rows of one file 
+wc -l <filename>
+	# Print the number of rows of every file in a directory 
+Wc -l *
+
+
+## Create an input list for slurs arrays
+ls R500_PSGgenes/R500_*.csv > R500_gene_list.txt
+Then add #SBATCH --array=1-36 to the top of the job script

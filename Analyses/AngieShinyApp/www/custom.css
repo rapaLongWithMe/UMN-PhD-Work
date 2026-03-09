@@ -1,0 +1,424 @@
+/* Custom CSS for Metabolomics Shiny App */
+
+/* Main body styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Header styling */
+.main-header .navbar {
+  background-color: #2c3e50 !important;
+  border-bottom: 3px solid #3498db;
+}
+
+.main-header .navbar .navbar-brand {
+  color: #ecf0f1 !important;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Sidebar styling */
+.main-sidebar {
+  background-color: #34495e !important;
+}
+
+.sidebar-menu > li.active > a {
+  background-color: #3498db !important;
+  border-left: 3px solid #2980b9;
+}
+
+.sidebar-menu > li > a {
+  color: #bdc3c7 !important;
+  transition: all 0.3s ease;
+}
+
+.sidebar-menu > li > a:hover {
+  background-color: #3498db !important;
+  color: #ffffff !important;
+}
+
+/* Content styling */
+.content-wrapper {
+  background-color: #ecf0f1;
+  min-height: 100vh;
+}
+
+/* Box styling */
+.box {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  border-top: none;
+}
+
+.box.box-primary {
+  border-top: 3px solid #3498db;
+}
+
+.box-header {
+  background-color: #ffffff;
+  border-radius: 8px 8px 0 0;
+}
+
+.box-header.with-border {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.box-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Button styling */
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin: 2px;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-success {
+  background-color: #27ae60;
+  border-color: #27ae60;
+}
+
+.btn-success:hover {
+  background-color: #229954;
+  border-color: #229954;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.btn-warning {
+  background-color: #f39c12;
+  border-color: #f39c12;
+  color: #ffffff;
+}
+
+.btn-warning:hover {
+  background-color: #e67e22;
+  border-color: #e67e22;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.btn-info:hover {
+  background-color: #138496;
+  border-color: #138496;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
+/* Alert styling */
+.alert {
+  border-radius: 6px;
+  border: none;
+  margin: 15px 0;
+  padding: 15px 20px;
+  font-weight: 500;
+}
+
+.alert-info {
+  background-color: #d5edff;
+  color: #1e6091;
+  border-left: 4px solid #3498db;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 4px solid #27ae60;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #f39c12;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 4px solid #e74c3c;
+}
+
+/* Value box styling */
+.small-box {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.small-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.small-box h3 {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.small-box p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* DataTable styling */
+.dataTables_wrapper {
+  margin-top: 20px;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+  margin-bottom: 15px;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f8f9fa;
+}
+
+.table > thead > tr > th {
+  background-color: #34495e;
+  color: #ffffff;
+  border-color: #34495e;
+  font-weight: 600;
+}
+
+/* Plot container styling */
+.plotly {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 15px;
+  margin: 15px 0;
+}
+
+/* Form controls */
+.form-control {
+  border-radius: 6px;
+  border: 1px solid #bdc3c7;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.selectize-control .selectize-input {
+  border-radius: 6px;
+  border: 1px solid #bdc3c7;
+}
+
+.selectize-control .selectize-input.focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Progress bar */
+.progress {
+  background-color: #ecf0f1;
+  border-radius: 10px;
+  height: 20px;
+}
+
+.progress-bar {
+  background-color: #3498db;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+/* Tab styling */
+.nav-tabs {
+  border-bottom: 2px solid #3498db;
+}
+
+.nav-tabs > li.active > a {
+  background-color: #3498db;
+  border-color: #3498db;
+  color: #ffffff;
+}
+
+.nav-tabs > li > a {
+  color: #7f8c8d;
+  border-radius: 6px 6px 0 0;
+}
+
+.nav-tabs > li > a:hover {
+  background-color: #ecf0f1;
+  border-color: #bdc3c7;
+}
+
+/* File input styling */
+.form-group .btn-file {
+  position: relative;
+  overflow: hidden;
+  background-color: #3498db;
+  border-color: #3498db;
+  color: #ffffff;
+}
+
+.form-group .btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  cursor: inherit;
+  display: block;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(52, 152, 219, 0.3);
+  border-radius: 50%;
+  border-top-color: #3498db;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .box {
+    margin: 10px 5px;
+  }
+  
+  .btn {
+    margin: 5px 2px;
+    font-size: 14px;
+  }
+  
+  .small-box h3 {
+    font-size: 24px;
+  }
+  
+  .content-wrapper {
+    padding: 10px;
+  }
+}
+
+/* Custom utility classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.p-20 {
+  padding: 20px;
+}
+
+.border-left-primary {
+  border-left: 4px solid #3498db;
+}
+
+.border-left-success {
+  border-left: 4px solid #27ae60;
+}
+
+.border-left-warning {
+  border-left: 4px solid #f39c12;
+}
+
+.border-left-danger {
+  border-left: 4px solid #e74c3c;
+}
+
+/* Workflow progress indicator */
+.workflow-progress {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workflow-progress li {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding: 10px;
+}
+
+.workflow-progress li:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #bdc3c7;
+  z-index: 1;
+}
+
+.workflow-progress li:first-child:before {
+  left: 50%;
+}
+
+.workflow-progress li:last-child:before {
+  right: 50%;
+}
+
+.workflow-progress li.active:before {
+  background-color: #3498db;
+}
+
+.workflow-progress li .step-number {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background-color: #bdc3c7;
+  color: #ffffff;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;
+}
+
+.workflow-progress li.active .step-number {
+  background-color: #3498db;
+}
+
+.workflow-progress li.completed .step-number {
+  background-color: #27ae60;
+}

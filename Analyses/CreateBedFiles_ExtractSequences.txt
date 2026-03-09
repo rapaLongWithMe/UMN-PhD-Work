@@ -1,0 +1,48 @@
+## Extract nucleotide sequences from .fa file to blast 
+	# Gene of interest:
+BrPCGlu.03G548500
+
+	# Genome of interest
+Brapassp_chinensisvar_communisPCGlu_712_v2.1.gene.gff3
+
+
+##### To create a bed file from a gff3 file: 
+	# This will also strip the isoform suffix 
+awk -F'\t' '
+  $1 !~ /^#/ && $3=="gene" {
+    split($9, a, ";")
+    name = ""
+    for (i in a) {
+      if (a[i] ~ /^Name=/) {
+        name = a[i]
+        sub(/^Name=/, "", name)
+      }
+    }
+    if (name == "") {
+      # fallback to ID if Name missing, and strip version like .v2.1
+      for (i in a) {
+        if (a[i] ~ /^ID=/) {
+          name = a[i]
+          sub(/^ID=/, "", name)
+          sub(/\.v[0-9.]+$/, "", name)
+        }
+      }
+    }
+    print $1 "\t" $4-1 "\t" $5 "\t" name "\t0\t" $7
+  }
+' Brapassp_chinensisvar_communisPCGlu_712_v2.1.gene.gff3 > PCGlu_genes.bed
+
+
+### Then: 
+module load bedtools
+
+grep -w "BrPCGlu.03G548500" PCGlu_genes.bed > PCGlu_MYB29gene.bed
+
+bedtools getfasta \
+  -fi Brapassp_chinensisvar_communisPCGlu_712_v2.1.protein_primaryTranscriptOnly.fa \
+  -bed PCGlu_MYB29gene.bed \
+  -s -name \
+  > PCGlu_MYB29gene.fa
+  
+  
+  

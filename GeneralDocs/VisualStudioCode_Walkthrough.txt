@@ -1,0 +1,57 @@
+Adding Your First File to a Git Repository (VS Code + Git)
+Option 1: Using VS Code GUI
+
+Open the repo in VS Code
+
+File → Open Folder… → select the cloned repository folder.
+
+Move your file into the repo
+
+Copy or drag your file into the repository folder you just opened.
+
+Open the Source Control panel
+
+Click the branch icon (Source Control) in the Activity Bar.
+
+Stage the file
+
+Under CHANGES, hover over the new file and click the ➕ (plus) icon.
+
+Commit the file
+
+Type a short commit message (e.g., “Add first file”).
+
+Press ⌘Enter (Mac) / Ctrl+Enter (Win/Linux) or click the ✓ checkmark.
+
+Publish / Push the branch
+
+Click Publish Branch (first push).
+
+Afterward, use the “Sync/Push” button to send new commits.
+
+Verify
+
+Visit the repository on GitHub/GitLab/Bitbucket and confirm the file is there.
+
+Option 2: Using Git Commands
+
+Open a terminal in your repo folder.
+
+Move or copy your file into the repo directory.
+
+Stage the file:
+
+git add <your-file-name>
+
+
+Commit the change:
+
+git commit -m "Add first file"
+
+
+Push to the remote (replace main with master if needed):
+
+git push origin main
+
+
+Verify online by checking your repository on GitHub/GitLab/Bitbucket.

@@ -1,0 +1,50 @@
+## Change the level of your local Git repository to a new folder:
+mv /Users/ricon001/Desktop/Git/Bnapus_WL_TC/.git /Users/ricon001/Desktop/Git/Bnapus_WL_TC/Revisions/Submission2_GitHub
+- VSC will prompt you to set up a repository here (far left, click button)
+-move into the new folder and commit a file(s) in the new folder
+
+ricon001@F1VRC92F0H Submission2_GitHub % git add MetabolomicsData.xlsx
+git commit -m "Submission2 Metabolomics Data"
+
+
+rm -rf /Users/ricon001/Desktop/Git/NewFolder/.git
+cd /Users/ricon001/Desktop/Git/NewFolder
+git init
+git remote add origin https://github.com/your-username/your-repository.git
+https://github.com/GreenhamLab/Bnapus_WL_TranscriptomeTC
+git add .
+git commit -m "Initial commit with a single small file"
+
+
+## Remove the current git repository
+rm -rf /Users/ricon001/Desktop/Git/Banpus_WL_TC/.git
+## Navigate to the folder that you want the new repository to point to
+cd /Users/ricon001/Desktop/Git/Bnapus_WL_TC/Revisions/Submission2_GitHub
+## Initialize a new local repository
+git init
+## Add the remote repository you want to eventually push to
+git remote add origin https://github.com/GreenhamLab/Bnapus_WL_TranscriptomeTC.git
+
+## Find out if there are other repositories and remove them if necessary
+find /Users/ricon001/Desktop/Git/Bnapus_WL_TC -name ".git"
+# Then repeat the above steps after removing all associated repositories
+# You should then be able to initialize a fresh repository, add files (stage), commit, and push to the remote repository
+
+## ricon001@F1VRC92F0H Submission2_GitHub % git push --set-upstream origin main
+To https://github.com/GreenhamLab/Bnapus_WL_TranscriptomeTC.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/GreenhamLab/Bnapus_WL_TranscriptomeTC.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+
+--> Need to pull and probs merge the differences from the remote repository and the local one
+# Allow 'unrealated histories' because resolve the differences in the two repositories and choose to merge
+git pull origin main --allow-unrelated-histories -no--rebase
+# git add path/to/resolved/file <- didn't need
+git commit -m "Merge remove changes"
+# PUsh the changes to the remote repository
+git push --set-upstream origin main 
+
+

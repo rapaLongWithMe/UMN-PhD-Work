@@ -1,0 +1,28 @@
+# Navigate to a directory that holds TCs_Mat.RData
+
+# Load the version of R you want to use 
+module load R/4.1.0
+	# Start R by:
+R
+
+# Set up the environment
+	# Right now dumping everything in this folder; in the future should set up folders to hold the input/output 
+	# Not sure if I need libPaths or chooseCRAN for interactive, but why not
+.libPaths(new='~/R/x86_64-pc-linux-gnu-library/4.1')
+chooseCRANmirror(ind=1)
+
+BiocManager::install("WGCNA")
+require(WGCNA)
+	# Might get prompted to update older packages
+	
+# Try allowing for a bunch of threads (cores) 
+allowWGCNAThreads(48)
+
+# Load the matrix of expression data
+getwd()
+load("AO3_TCs_Mat.RData")
+
+# Construct the network; change power and cutheight appropriately
+
+BlockModsAll_p6cut.2 <- blockwiseModules(datExpr = t(TCs_Mat), power = 6,
+networkType = "signed", corType="bicor", TOMType="signed", minModuleSize=100, mergeCutHeight=0.20, deepSplit=1, pamRespectsDendro = F, nThreads = 4, verbose=3)

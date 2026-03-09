@@ -1,0 +1,268 @@
+---
+title: "Greenham Lab DiPALM analyses"
+author: "Angie Ricono"
+date: "2022-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Every genotype will be run independently through this DiPALM pipeline. Genotypes may be combined later based on their Response scores (see …..) or other downstream analyses. 
+
+
+The overall workflow will include the following steps:
+NormCounts (normalizing raw count data)
+PreProcessing (cleaning the normalized data)
+OutlierDetection (checking for outliers or samples with abnormally high variation at a given tp)
+ModuleDetection (Building the co-expression networks and pulling out module eigengenes)
+ModuleMembership (Using these eigengenes to run DiPALM and pull out stress responsive genes)
+FinalClustering (Clustering the stress responsive (or differentially responsive) genes based on stress response)
+
+
+First, set up your environment
+```{r Set up the environment}
+## Sometimes edgeR can be quite tempermental when loading for the first time. If that's the case try:
+  # if (!requireNamespace("BiocManager", quietly = TRUE))
+  # install.packages("BiocManager")
+  #BiocManager::install("edgeR")
+
+require(edgeR)
+require(readr)
+require(tidyverse)
+
+outPath = "~/Desktop/Git/RNAseq/ExampleData/LabWide_DiPALM_ACC28/R_output"
+```
+
+
+
+Once you have your raw count tables, start by normalizing. This will take 5-10 minutes depending on the number of count tables you have to go through. 
+```{r Bring in the raw counts}
+## Bring in the data
+  # compile all files at once into a single dataframe
+setwd("~/Desktop/Git/RNAseq/ExampleData/LabWide_DiPALM_ACC28/RawCounts")
+
+# create a vector that contains the name of files to loop over
+  # make sure this folder ONLY contains the count tables!
+filenames <- list.files()
+# make sure these names look correct and you have the right number
+    # 8tps*4reps*2treatments = 64
+print(filenames)
+
+# compile all files into a list with one element for each file
+rapa = lapply(filenames, function(i) {
+  read.table(i, header = TRUE) 
+})
+names(rapa) = filenames
+
+
+## Initialize some empty vectors to fill in
+NormCounts = ""
+cnts = ""
+## ADD ROWNAMES FROM GENE ID ####
+for (i in 1:length(rapa)) {
+  print(names(i))
+  rownames(rapa[[i]]) = rapa[[i]]$Geneid
+  print(rownames(rapa[[i]]))
+  geneLen = setNames(abs(rapa[[i]]$Length), nm = rapa[[i]]$Geneid)
+  cnts[[i]] = rapa[[i]][7]
+  cnts = do.call(cbind, cnts)
+  cntsDge<- DGEList(counts = cnts)
+  cntsDge<- calcNormFactors(cntsDge)
+  NormCounts<- rpkm(cntsDge, log=T, gene.length = geneLen, prior.count=0)
+}
+
+
+## You may want to save the normalized counts
+  ##### CHANGE FILENAME BASED ON GENOTYPE #####
+save(NormCounts, file = "../ACC28_NormCounts.RData")
+##### ##### ##### ##### ##### ##### ##### #####
+
+```
+
+
+Next we will clean up the the normalized count table before doing some filtering
+```{r Data cleaning}
+## Fix the column names. Making a DF here makes this process a bit easier 
+DF = data.frame(NormCounts)
+colnms<-colnames(data.frame(NormCounts))
+
+# remove the bam. and .bam 
+colnms<-gsub("bam.","",colnms)
+colnms<-gsub(".bam","",colnms)
+# C is cold, W is warm, and TP is time point
+colnms<-gsub("CTP","Cold_",colnms)
+colnms<-gsub("WTP","Control_",colnms)
+
+# split into pieces, each piece will become a list used to index
+rawnames = strsplit(x = colnms, split = "_")
+# making a new vector with names ordered as Geno_Replicate#_Treatment_Timepoint
+short_names = sapply(rawnames,function(x) paste(x[c(1,4,2,3)],collapse = "_"))
+
+# set cleaned column names to previous df
+colnames(DF)<-short_names
+
+
+## Remove time point 7 and 8 since those are actually recovery
+colnames(DF)
+clean = DF[,-c(48:64)]
+# Make Geneid the rowname
+rownames(clean) = clean$Geneid_NA_NA_NA
+# Rm the duplicate column now
+clean = clean[, -1]
+
+# Remove any annotations that do not contain Bra (ENSRNA genes, Bo, etc)
+clean = clean[which(str_detect(rownames(clean), "ENSRNA") == FALSE), ]
+
+# Log transform the counts by looping over the columns
+clean = log2(clean)
+
+# make a matrix; the number of elements should match the number of elements present in NormCounts
+CleanGenes = as.matrix(clean)
+```
+
+
+Now we filter the counts to remove genes with low/no expression and to remove genes with low variance across the time course. This is because limma requires variance to call differential expression. 
+```{r Data filtering}
+## Remove non-expressed genes
+  # plot to determine a cutoff
+geneMeans<-apply(CleanGenes,1,function(x) mean(x,na.rm = T))
+hist(geneMeans,col="skyblue", breaks = seq(-12,16,0.25), main = "GeneMeans")
+abline(v=0,col="red",lwd=3,lty=2)
+
+  # remove genes that do not have at least one sample with mean log2 FPKM >0
+FilteredGenes<-CleanGenes[which(geneMeans>0),]
+  # plot again to make sure retaining genes with mean >0
+geneMeans<-apply(FilteredGenes,1,function(x) mean(x,))
+hist(geneMeans,col="skyblue", breaks = seq(-12,16,0.25), main = "FPKM >0")
+abline(v=0,col="red",lwd=3,lty=2)
+  # check that the number/proportion of genes removed makes sense
+(nrow(CleanGenes) - nrow(FilteredGenes)) / nrow(CleanGenes)
+
+  # replace NaNs resulting from taking the log of 0 (when normalizing counts)
+ProcessedGenes = FilteredGenes
+minVal<-min(FilteredGenes[!is.na(FilteredGenes)])-.001
+ProcessedGenes[is.na(ProcessedGenes)]<-minVal
+  # double check
+which(is.na(FilteredGenes))
+which(is.na(ProcessedGenes))
+range(ProcessedGenes)
+  # final plot to double check; depending on the number of NaNs you start with you may see a small tail below zero
+geneMeans<-apply(ProcessedGenes,1,function(x) mean(x,na.rm = T))
+hist(geneMeans,col="skyblue", breaks = seq(-12,16,0.25), main = "Processed Genes")
+abline(v=0,col="red",lwd=3,lty=2)
+
+# save the processed data. Itls a good idea to keep this csv separate so it doesn't accidentally get manipulated downstream 
+  # want genes as rows and samples as columns
+rownames(ProcessedGenes)
+colnames(ProcessedGenes)
+
+##### CHANGE BASED ON GENOTYPE #####
+write.csv(ProcessedGenes, file = file.path(outPath, "ACC28_ProcessedGenes.csv"))
+##### ##### ##### ##### ##### ##### #####
+
+```
+
+
+If a replicate is missing (ie. died) you may want to impute this sample rather than loose the whole sample. We do this by calculating the meadian of two replicates and replacing the missing sample with those values. 
+```{r Imputing samples}
+ImputedGenes = data.frame(ProcessedGenes)
+
+colnames(ImputedGenes)
+ImputedGenes$Ne_7_Drought_R1 = ImputedGenes %>%
+  select(Ne_7_Drought_R2, Ne_7_Drought_R3) %>%
+  apply(1, median)
+colnames(ImputedGenes)
+
+ImputedGenes = as.matrix(ImputedGenes)
+
+## Remove genes with no variation in expression
+  # first separate data into TimeCourses by treatment (ex:ColdR1, ColdR2, ColdR3; same for control reps)
+tmp<-ProcessedGenes
+
+#split the names by a separator
+spNms<-strsplit(x = colnames(tmp), split = "_")
+spNms
+#take the full names (Geno_Rep_Treat_Zt) and collapse them to Treatment.R1
+tnms<-sapply(spNms,function(x) paste(x[c(3,2)],collapse = "_"))
+#separate by sample type
+  ### MAKE SURE THIS TABLE HAS EXPRESSIOIN DATA AND NOT TRUE/FALSE ###
+FilteredTCs<-tapply(1:length(tnms),INDEX = tnms, function(x) tmp[,x])
+
+#find what genes = TRUE for var > 0
+varFiltered<-lapply(FilteredTCs,function(x) apply(x,1,function(y) var(y)>0))
+#bind into a matrix of TRUE instances (for above) by sample type
+varFiltered<-do.call(cbind,varFiltered)
+#takes logical data and finds which vectors have all TRUEs
+varFiltered<-apply(varFiltered,1,function(x) all(x))
+#adding gene names back
+varFiltered<-names(varFiltered)[which(varFiltered)]
+#applying the above list to the previous data (seperated by TC; all tps for each replicate by treatment)
+TCs<-lapply(FilteredTCs,function(x) x[varFiltered,])
+
+## Reorder by Zt (here y = 4; or the piece of the colname that indicates Zt)
+  #downstream will need both a list with elements as TCs (colnames as timepoint)
+TCs_List<-lapply(TCs,function(x) x[,order(as.numeric(sapply(strsplit(colnames(x),split = "_"),function(y) y[4])))])
+#want one TC as an element and all timepoints as columns for each element
+sapply(TCs_List,colnames)
+
+#compile into a large matrix
+TCs_Mat<-do.call(rbind,TCs_List)
+
+#check the gene names
+head(rownames(TCs_Mat))
+tail(rownames(TCs_Mat))
+#remove any annotation (ie ENSRNA genes) that are not Bra 
+which(!str_detect(rownames(TCs_Mat), "Bra")== TRUE)
+```
+
+
+All of the annotations (gene names) are 
+```{r}
+#Add a treatment prefix to every gene
+Cold = TCs_List[1:4]
+names(Cold)
+Control = TCs_List[5:8]
+names(Control)
+
+#Create rownames for the two lists
+Cold_names = paste("Cold", rownames(Cold[[1]]), sep = "_")
+Control_names = paste("Control", rownames(Control[[1]]), sep = "_")
+
+#update the rownames
+Cold = lapply(Cold, function(x) {rownames(x) = Cold_names; x})
+Control = lapply(Control, function(x) {rownames(x) = Control_names; x})
+
+
+#bind them back together
+test = list(Cold, Control)
+TCs_List = unlist(test, recursive = FALSE)
+
+#want one TC as an element and all timepoints as columns for each element
+sapply(TCs_List,colnames)
+
+#compile into a large matrix
+TCs_Mat<-do.call(rbind,TCs_List)
+
+#check the gene names
+head(rownames(TCs_Mat))
+tail(rownames(TCs_Mat))
+#remove any annotation (ie ENSRNA genes) that are not Bra 
+which(!str_detect(rownames(TCs_Mat), "Bra")== TRUE)
+
+
+
+##### CHANGE TO MATCH GENOTYPE ##### 
+filepath = file.path("~/Desktop/Git/RNAseq/Brapa/ExpressedGenes/TCs_Lists")
+save(TCs_List, file = file.path(filepath, "ACC28_TCs_List.RData"))
+
+filepath = file.path("~/Desktop/Git/RNAseq/Brapa/ExpressedGenes/TCs_Mat")
+save(TCs_Mat, file = "ACC28_TCs_Mat.RData")
+##### ##### ##### ##### ##### #####
+```
+
+
+
+
