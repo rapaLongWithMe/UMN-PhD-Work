@@ -72,10 +72,12 @@ unique(heatDat_short$Rep)
 dat = rbind(ControlDat_short, heatDat_short)
 # Clean up the labels 
 dat = dat %>% unite("Label", Day:Treatment, remove = FALSE)
+unique(dat$Label)
+
 dat = dat %>% mutate(Genotype = factor(Genotype, levels = c("mn106 wt", "elf3 1683", "elf3 7", "toc1", "sp32 wt", "hag1hag3", "myc3", "aop2")))
 dat = dat %>% mutate(Label = factor(Label, levels = c("Day1_4pm_Control", "Day1_4pm_40C", "Day2_10am_Control", "Day2_10am_40C", 
                                               "Day2_4pm_Control", "Day2_4pm_40C", "Day2_10pm_Control", "Day2_10pm_40C", 
-                                              "Day3_4am_Control", "Day3_4am_40C", "Day3_10am_Control", "Day3_10am_40C")))
+                                              "Day3_4am_Control", "Day3_4am_40C", "Day3_10am_Control", "Day3_10am_40C", "Day3_4pm_Control", "Day3_4pm_40C")))
 
 
 # Separate into genetic background and type of mutant
@@ -90,9 +92,45 @@ dat %>%
   ## Add vertical lines to indicate heat/no heat
   # on: 10am; off: 10pm 
   geom_vline(xintercept=(8.5), linetype = "dashed", color = "red") +
-  geom_vline(xintercept=(16.5), linetype = "dashed", color = "blue")
+  geom_vline(xintercept=(16.5), linetype = "dashed", color = "red") +
+  geom_vline(xintercept=(24.5), linetype = "dashed", color = "red")
+
+
+## Add vertical lines to indicate heat/no heat
+    # on: 10am; off: 10pm 
+# get the coordinates
+dat %>%
+  filter(Genotype %in% c("sp32 wt", "hag1hag3")) %>%
+  with(levels(interaction(Genotype, Label)))
 
 ## Print all mutant plots at once: 
+
+pdf("Pennycress_HeatStressPlots.pdf")
+
+## Split by mutant
+dat %>%
+  filter(Genotype == "sp32 wt" | Genotype == "aop2" | Genotype == "hag1hag3" | Genotype == "myc3") %>%
+  ggplot(aes(x = Label, y = as.numeric(gsw), fill = interaction(Genotype, Treatment), color = interaction(Genotype, Treatment))) +
+  geom_boxplot(alpha = .5, position = position_dodge(width = .8)) +
+  geom_point(position = position_dodge(width = .8)) +
+  theme_bw() +
+  #facet_grid(~Treatment) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_grid(~Genotype) +
+  ggtitle("Stomatal Conductance")
+
+dat %>%
+  filter(Genotype == "sp32 wt" | Genotype == "aop2" | Genotype == "hag1hag3" | Genotype == "myc3") %>%
+  ggplot(aes(x = Label, y = as.numeric(A), fill = interaction(Genotype, Treatment), color = interaction(Genotype, Treatment))) +
+  geom_boxplot(alpha = .5, position = position_dodge(width = .8)) +
+  geom_point(position = position_dodge(width = .8)) +
+  theme_bw() +
+  #facet_grid(~Treatment) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_grid(~Genotype) +
+  ggtitle("Carbon Assimilation")
+
+dev.off()
 
 
 
