@@ -1,0 +1,22 @@
+Notes from Ben meeting 3/10/2026
+April 20th Ben swamped
+
+Arabidopsis defense biotic at dawn 
+-zhang et al 2013 pseudomonas
+ics1 and SA circadian regulated; if knock out che-2 loose the rhythmicity. che directly binds ics1
+-read mullet N. A. et al Nat Genet 2015 
+	- LNK2 controls period; EID1 controls phase
+	
+disco rhythm - shiny app that detects rhythms. Uses JTK-Cycle and other algorithms (can select)
+
+1. what are the core conserved clock genes among the three species 
+	- can do promoter analyses
+2. What are the phase differences among the shared genes 
+	- are defense/hormones genes that have a phase shift <- in pimpi vs penelli 
+2**: What is different between arabidopsis and tomato clock genes? why does ics1 have a 12h delay in tomato?
+	- plants are adapted to drougt in the morning; but just how arabidopsis does it. if another plant
+	is adapted to the afternoon, but is still under clock function
+3. Why is ICS1 expression different when alot of the other circadian genes are (or are they?) essentially similar? 
+- CHE seems like it might be 
+!! What is the phase change that leads to a difference in immunity!! 
+-are there different chronotypes that are good for immunity??
