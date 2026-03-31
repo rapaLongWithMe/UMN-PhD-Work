@@ -1,0 +1,18 @@
+# Count how many lines in the GFF have "symbol="
+gzcat Araport11_GFF3_genes_transposons.gff.gz | grep -c "symbol="
+
+
+# Unzip relevant files
+gunzip Araport11_GTF_genes_transposons.*.gtf.gz
+gunzip Araport11_functional_descriptions_*.txt.gz
+
+# Extract gene IDs from GTF (assuming 'gene_id "AT1G01010";')
+grep 'gene ' Araport11_GTF_genes_transposons.*.gtf | \
+  sed -E 's/.*gene_id "([^"]+)".*/\1/' | sort | uniq > gene_ids.txt
+
+# Prepare mapping: gene_id \t gene_symbol
+grep -P '\tAraport11' Araport11_functional_descriptions_*.txt | \
+  cut -f1,2 > id2symbol.txt
+
+# Join mapping (if gene_ids are sorted)
+join -t $'\t' gene_ids.txt id2symbol.txt > all_genes_with_symbols.txt

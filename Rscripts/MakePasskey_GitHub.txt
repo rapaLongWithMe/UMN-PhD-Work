@@ -1,0 +1,41 @@
+Switch your repo to SSH in VS Code
+
+Open the repo in VS Code
+
+You should see your repo name in the Source Control panel.
+
+Open an integrated terminal
+
+View → Terminal (or Ctrl+`).
+
+Generate/set up an SSH key (one-time)
+
+#####
+ssh-keygen -t ed25519 -C "your_email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+#####
+
+Copy the public key:
+#####
+cat ~/.ssh/id_ed25519.pub
+#####
+
+In your browser, go to github.umn.edu → your profile Settings → SSH and GPG keys → New SSH key → paste → Save.
+
+Update the remote URL to SSH (still in the VS Code terminal)
+#####
+git remote set-url origin git@github.umn.edu:greenhamlab/NSF_IOS_2020.git
+#####
+
+(GUI alternative: Command Palette → “Git: Set Remote URL” → pick origin → paste git@github.umn.edu:greenhamlab/NSF_IOS_2020.git.)
+
+Push from VS Code
+
+Source Control → … → Pull, Push → Push
+
+Or in the terminal:
+#####
+git push -u origin main
+#####
+
