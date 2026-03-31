@@ -1,0 +1,26 @@
+
+## (Globally) set the text editor to nano; default is Vims or something and it's god awful 
+git config --global core.editor "nano"
+
+## Prints error and warning messages in real time
+watch "squeue -u ricon001; tail slurm*"
+
+## Load and open R
+module load R/4.3.0-openblas-rocky8
+R
+
+## Navigate to old home
+$OLDHOME
+# Or new home
+$NEWHOME
+# Or scratch
+/scratch.global/ricon001
+
+# Count number of columns in a file: 
+awk -F, '{print NF; exit}' June29Control_ACC28_perm.network.9.csv
+
+# Count number of rows in a file:
+wc -l filename.txt
+
+# Take a random subset of 1000 rows, starting on the 11th row (if want to preserve metadata at the beginning of the file) 
+tail -n +11 motifs.meme | shuf -n 1000 > test_motifs.meme
