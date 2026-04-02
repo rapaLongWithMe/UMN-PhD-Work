@@ -1,0 +1,18 @@
+Ben meet April 1st 
+
+does the ICS1/EID rescue have the same patterns as 
+pimpi is progenitor to tomato, not penelli. so if something was lost in the progenitor and carried on then we would see it in the following species 
+
+HAVING A FUNCTIONAL CLOCK MATTERS FOR DISEASE RESISTANCE <-main question
+how does this and other gene compare between their dataset and our dataset 
+what does this gene look like in LD, SD ect 
+
+1. read papers
+2. get familiar with salmon/RNAseq workflow from docs on monday
+3. download their data 
+4. plot expression under different photoperiods 
+	EID
+	LNK2
+	ICS1
+	ect
+	WRKYs? <- which one has a binding motif? 
