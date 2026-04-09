@@ -1,2 +1,5 @@
 # Affinity lock files
 *~lock~
+
+# Temporary files that start with '~' (e.g., Office lock files)
+~*
