@@ -1,0 +1,124 @@
+## Connect to vpn (Danforthvpn.wustl.edu) vis Cisco
+
+## Log on to compute 2
+ssh ricono@c2-login-001.ris.wustl.edu
+Password: LikeClockwork8
+
+## See what's already available 
+ml avail
+
+## List of basic job options and bash set up for batch jobfound here: 
+https://washu.atlassian.net/wiki/spaces/RUD/pages/2304147627/Quickstart+Guides
+	# Guidelines for job arrays can be found at the bottom of this (bookmarked) page
+	
+## Navigate to the working directory
+cd /storage1/fs1/bmansfeld/Active/work/Angie
+
+
+##### LOAD CONDA/ENVIRONMENT
+	# Open ~/.bashrc
+nano ~/.bashrc
+	# Add environments and packages (Ithink?) to the bottom of the document
+export CONDA_ENVS_DIRS="/storage1/fs1/bmansfeld/Active/conda/envs/"
+export CONDA_PKGS_DIRS="/storage1/fs1/bmansfeld/Active/conda/pkgs/"
+	# Save, exit, and source the file 
+source .bashrc
+	# check that the variables are set 
+echo $CONDA_ENVS_DIRS
+echo $CONDA_PKGS_DIRS
+
+# This will activate sra-tools in the environment you are in
+conda activate sra-tools 
+	# To make those tools available to an interactive environment:
+srun -p general-interactive -n 8 --mem=32GB --pty /bin/bash
+conda activate sra-tools
+	# Check that it worked
+fastq-dump
+
+# If activated, your prompt should look like this: 
+(sra-tools) [ricono@c2-node-076 Angie]$
+
+
+##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### 
+##### Create SRA_List 
+	# Make sure edirect is available 
+which esearch 
+which efetch # Both should return directories if available
+
+## Install EDirect if necessary (run on the login node)
+cd ~
+curl -O https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh
+bash install-edirect.sh
+
+# Test that it worked 
+which esearch
+esearch -version
+
+# Then add to ~/.bashrc and resource
+echo 'export PATH="$HOME/edirect:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Troublehsooting - if get 'command not found' might not be on the current path 
+export PATH="$HOME/edirect:$PATH"
+
+
+## Create a 'runinfo' doc to pull SRA's from 
+	# Replace 'PRJNA....' with the project ID that you want to pull from 
+		# Can name the file something generic because it's on an interactive shell; pull file after 
+esearch -db sra -query PRJNA1180479 | efetch -format runinfo > runinfo.csv
+
+# After it's run 
+head runinfo.csv
+	# Will likely have one more row that samples; first row are headers
+wc -l runinfo.csv
+
+## Pull just the SRAs for that project and put into 'SRA_LIST.txt' to use in pipeline
+cut -d',' -f1 runinfo.csv | grep '^SRR' > SRA_LIST.txt
+head SRA_LIST.txt
+wc -l SRA_LIST.txt
+##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### 
+
+
+##### Submit and follow progress 
+
+# Track number of zipped fastq files made 
+	# For paired end data will expect wc -l == nsamples *2 
+find /storage1/fs1/bmansfeld/Active/work/Angie/Gonzalez_Delgado_SRA -name "*.fastq.gz" | wc -l
+
+# Or count within the directory
+
+
+##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### 
+
+##### RERUNNING THE FAILED SAMPLES 
+
+# Grab just the six that didn't zip for whatever reason 
+ls fastqs/*.fastq | xargs -n1 basename -s .fastq > SRA_LIST_V1failed.txt
+ - list all files in the fastqs directory that has something.fastq in the file name 
+ - pipe that list into xargs to run through each item of the list individually (-n1) 
+ - basename strips the directory information 
+ - s flag strips the suffix (after deliminator in this case = .fastq)
+ - Save all of that in a text file named SRA_LIST_V1failed. txt 
+
+# Strip off the _# suffix to remove both paired ends (_1; _2)
+	# Remove underscore and either a one or a two at the end of the name ($); replace with nothing (//) and save to tmp file
+sed 's/_[12]$//' SRA_LIST_V1failed.txt > tmp.txt
+	# Rename 
+mv tmp.txt SRA_LIST_V1failed.txt 
+	# Check 
+cat SRA_LIST_V1failed.txt
+ 
+# Remove both paired end samples from folders to restart (pipeline will see it as already done otherwise)
+	# This just prints the files that will be removed for a given folder
+xargs -a SRA_LIST_V1failed.txt -I {} rm -f fastqs/{}_1.fastq.gz fastqs/{}_2.fastq
+	- where ' -I {}' will index the contents of xargs and put each item in a {placeholder}
+	- f flag prevents errors if one or other is missing; might want to remove that
+	- remove 'echo' to actually run the command
+ 
+
+##### GLOBUS
+# Linked wustl account to UMN account 
+# Walkthrough bookmarked here: 
+https://washu.atlassian.net/wiki/spaces/RUD/pages/1795588152/Moving+Data+With+Globus
+^^ no endpoint for PRJNA1180479 
+

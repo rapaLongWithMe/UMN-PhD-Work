@@ -22,5 +22,8 @@ awk -F, '{print NF; exit}' June29Control_ACC28_perm.network.9.csv
 # Count number of rows in a file:
 wc -l filename.txt
 
+# Count number of files in a directory
+ls | wc -l
+
 # Take a random subset of 1000 rows, starting on the 11th row (if want to preserve metadata at the beginning of the file) 
 tail -n +11 motifs.meme | shuf -n 1000 > test_motifs.meme
