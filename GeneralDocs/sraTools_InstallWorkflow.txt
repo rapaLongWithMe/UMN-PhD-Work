@@ -1,0 +1,130 @@
+1. Download and extract
+cd ~
+curl --output sratoolkit.tar.gz https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-mac64.tar.gz
+tar -xzf sratoolkit.tar.gz
+
+Expected output folder:
+
+sratoolkit.3.4.1-mac-x86_64
+2. Add toolkit to PATH
+
+Open your shell config:
+
+nano ~/.zshrc
+
+Add this line (match folder name exactly):
+
+export PATH="$HOME/sratoolkit.3.4.1-mac-x86_64/bin:$PATH"
+
+Save and exit, then reload:
+
+source ~/.zshrc
+3. Verify installation
+which fasterq-dump
+which vdb-config
+
+Expected:
+
+/Users/<username>/sratoolkit.3.4.1-mac-x86_64/bin/fasterq-dump
+
+Test:
+fasterq-dump --help
+
+##### Doesn't seem to be required anymore but can check in case
+4. Configure toolkit 
+vdb-config --interactive
+Enable “Use Prefetch”
+Accept default download directory (or set custom)
+Save and exit
+#####
+
+5. Test download workflow
+prefetch SRR390728
+fasterq-dump SRR390728
+# Gives this: 
+ricon001@Angelas-MacBook-Air ~ % fasterq-dump SRR390728
+spots read      : 7,178,576
+reads read      : 14,357,152
+reads written   : 14,357,152
+
+
+Notes
+Folder name must match PATH exactly (mac-x86_64, not mac64)
+Toolkit is x86_64 but runs on Apple Silicon via Rosetta
+Keep installation in ~ (not Downloads) for stability
+Optional (future-proof PATH)
+export PATH="$HOME/sratoolkit*/bin:$PATH"
+
+Tips
+If you're downloading RNA-seq:
+Use:
+
+fasterq-dump SRR390728 --split-files
+
+
+6. Install Homebrew (required for downstream tools)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+Add Homebrew to PATH (Apple Silicon):
+
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+source ~/.zshrc
+
+Verify:
+
+brew --version
+
+
+7. Install EDirect (NCBI command-line tools: esearch, efetch)
+cd ~
+curl -O https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh
+bash install-edirect.sh
+
+Add to PATH:
+
+echo 'export PATH="$HOME/edirect:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+Verify:
+
+esearch -version
+
+
+8. Retrieve SRA run IDs from BioProject
+
+Example BioProject: PRJNA1180479
+
+esearch -db sra -query PRJNA1180479 | efetch -format runinfo > runinfo.csv
+
+Extract SRR IDs:
+
+cut -d',' -f1 runinfo.csv | grep SRR > srr_ids.txt
+
+
+9. Download all runs (recommended workflow)
+prefetch --option-file srr_ids.txt
+
+Downloads to:
+
+~/ncbi/public/sra
+10. Convert SRA → FASTQ
+
+Paired-end RNA-seq:
+
+for srr in $(cat srr_ids.txt); do
+  fasterq-dump $srr --split-files -O fastq
+done
+11. Compress FASTQ files
+gzip fastq/*.fastq
+12. Optional: speed optimization
+fasterq-dump $srr --split-files -e 6 -p -O fastq
+-e = threads
+-p = progress bar
+Requires sufficient disk space for temporary files
+Additional Notes
+BioProject IDs (PRJNA…) must be converted to SRR run IDs before downloading
+Always use prefetch first for stable downloads
+fasterq-dump is resource-intensive; ensure adequate disk space
+Output FASTQ files can be large; compression is recommended
+
+
